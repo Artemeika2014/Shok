@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Фри Робакс</title>
+    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Comfortaa', cursive;
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            user-select: none;
+            overflow: hidden;
+        }
+
+        /* Экран подтверждения */
+        .confirm-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        .confirm-box {
+            background: #1e1e3a;
+            border: 3px solid #ffd700;
+            border-radius: 30px;
+            padding: 50px 40px;
+            text-align: center;
+            max-width: 500px;
+            box-shadow: 0 0 50px rgba(255, 215, 0, 0.3);
+        }
+
+        .confirm-box h2 {
+            color: #ffd700;
+            font-size: 28px;
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+
+        .confirm-box .warning-icon {
+            font-size: 70px;
+            margin-bottom: 20px;
+        }
+
+        .confirm-box p {
+            color: #ffffff;
+            font-size: 18px;
+            line-height: 1.8;
+            margin-bottom: 30px;
+            font-weight: 400;
+        }
+
+        .confirm-box .highlight {
+            color: #ff6b6b;
+            font-weight: 700;
+        }
+
+        .confirm-btn {
+            font-family: 'Comfortaa', cursive;
+            background: linear-gradient(135deg, #ffd700, #ffaa00);
+            color: #1a1a2e;
+            border: none;
+            padding: 18px 50px;
+            font-size: 22px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 700;
+            transition: all 0.3s;
+            letter-spacing: 1px;
+        }
+
+        .confirm-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.6);
+        }
+
+        .confirm-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* Основной контент */
+        .main-content {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            height: 100vh;
+            position: relative;
+        }
+
+        .container {
+            background: rgba(30, 30, 58, 0.95);
+            border: 3px solid #ffd700;
+            border-radius: 30px;
+            padding: 40px 30px;
+            text-align: center;
+            z-index: 10;
+            box-shadow: 0 0 40px rgba(255, 215, 0, 0.2);
+            margin-top: 80px;
+        }
+
+        h1 {
+            color: #ffd700;
+            font-size: 36px;
+            margin-bottom: 10px;
+            font-weight: 700;
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+        }
+
+        .subtitle {
+            color: #ff6b6b;
+            font-size: 16px;
+            margin-bottom: 30px;
+        }
+
+        .golden-btn {
+            font-family: 'Comfortaa', cursive;
+            background: linear-gradient(135deg, #ffd700, #ff8c00, #ffd700);
+            color: #1a1a2e;
+            border: none;
+            padding: 20px 60px;
+            font-size: 28px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 700;
+            transition: all 0.3s;
+            letter-spacing: 2px;
+            animation: glow 2s infinite;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .golden-btn:hover {
+            transform: scale(1.08);
+            box-shadow: 0 0 50px rgba(255, 215, 0, 0.7);
+        }
+
+        .golden-btn:active {
+            transform: scale(0.95);
+        }
+
+        @keyframes glow {
+            0%,
+            100% {
+                box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
+            }
+            50% {
+                box-shadow: 0 0 50px rgba(255, 215, 0, 0.8), 0 0 80px rgba(255, 140, 0, 0.4);
+            }
+        }
+
+        /* Экран обратного отсчёта */
+        .countdown-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 100;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .countdown-box {
+            background: #1e1e3a;
+            border: 3px solid #ff4444;
+            border-radius: 30px;
+            padding: 40px;
+            text-align: center;
+            box-shadow: 0 0 40px rgba(255, 0, 0, 0.3);
+        }
+
+        .countdown-title {
+            color: #ff4444;
+            font-size: 24px;
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+
+        .countdown-timer {
+            color: #ffd700;
+            font-size: 80px;
+            font-weight: 700;
+            text-shadow: 0 0 30px rgba(255, 215, 0, 0.7);
+            margin-bottom: 20px;
+        }
+
+        .countdown-warning {
+            color: #ff6b6b;
+            font-size: 18px;
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            0%,
+            100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.3;
+            }
+        }
+
+        /* Рекламное окно */
+        .ad-popup {
+            position: fixed;
+            width: 280px;
+            background: linear-gradient(135deg, #ff6b6b, #ff4444);
+            border: 2px solid #ffffff;
+            border-radius: 15px;
+            padding: 15px;
+            cursor: grab;
+            z-index: 200;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            transition: box-shadow 0.3s;
+            color: #ffffff;
+        }
+
+        .ad-popup:active {
+            cursor: grabbing;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.7);
+        }
+
+        .ad-popup .ad-header {
+            font-weight: 700;
+            font-size: 18px;
+            margin-bottom: 8px;
+        }
+
+        .ad-popup .ad-body {
+            font-size: 14px;
+            margin-bottom: 12px;
+            line-height: 1.5;
+        }
+
+        .ad-popup .close-ad {
+            position: absolute;
+            top: 8px;
+            right: 12px;
+            background: #ffffff;
+            color: #ff4444;
+            border: none;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 18px;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .ad-popup .close-ad:hover {
+            background: #ff4444;
+            color: #ffffff;
+            transform: rotate(90deg);
+        }
+
+        .prank-footer {
+            position: fixed;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: rgba(255, 255, 255, 0.3);
+            font-size: 10px;
+            z-index: 150;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Экран подтверждения -->
+    <div class="confirm-overlay" id="confirmOverlay">
+        <div class="confirm-box">
+            <div class="warning-icon">🎭</div>
+            <h2>⚠️ Внимание</h2>
+            <p>
+                Данный сайт <span class="highlight">создан в развлекательных целях</span> и никому не причинит вреда.<br><br>
+                Это всего лишь <span class="highlight">пранк</span>.<br>
+                Никакой реальной угрозы вашему устройству нет.
+            </p>
+            <button class="confirm-btn" onclick="startExperience()">✅ Я понимаю, продолжить</button>
+        </div>
+    </div>
+
+    <!-- Основной контент -->
+    <div class="main-content" id="mainContent">
+        <div class="container">
+            <h1>🎁 Палучи фри робакс</h1>
+            <p class="subtitle">* бесплатные робаксы каждому посетителю</p>
+            <button class="golden-btn" id="getRobuxBtn">ПОЛУЧИТЬ</button>
+        </div>
+        <div class="prank-footer">пранк</div>
+    </div>
+
+    <!-- Экран обратного отсчёта -->
+    <div class="countdown-overlay" id="countdownOverlay">
+        <div class="countdown-box">
+            <div class="countdown-title">⚠️ Если вы не удалите Roblox ваш телефон будет заражен трояном через:</div>
+            <div class="countdown-timer" id="countdownTimer">1:00:00</div>
+            <div class="countdown-warning">⏳ ВРЕМЯ НА ИСХОДЕ ⏳</div>
+        </div>
+        <div class="prank-footer" style="position: fixed; bottom: 10px;">пранк</div>
+    </div>
+
+    <script>
+        // Рекламные тексты (25 вариантов)
+        const adTexts = [
+            { header: '🔥 СРОЧНО!', body: 'Ваш Roblox взломан! Установите защиту прямо сейчас!' },
+            { header: '💰 БЕСПЛАТНО', body: 'Получите 10 000 робаксов! Просто нажмите сюда!' },
+            { header: '🎮 УНИКАЛЬНО', body: 'Секретный скин для Roblox! Только сегодня!' },
+            { header: '⚠️ ВНИМАНИЕ', body: 'Ваш аккаунт под угрозой! Немедленно подтвердите данные.' },
+            { header: '🏆 ПОЗДРАВЛЯЕМ', body: 'Вы выиграли VIP-статус в Roblox! Заберите приз!' },
+            { header: '👻 СТРАШНО', body: 'Проклятие обновления! Ваш аватар исчезнет через час!' },
+            { header: '💎 ЭКСКЛЮЗИВ', body: 'Редкий предмет: Голова Билдермена. Бесплатно!' },
+            { header: '🦠 ОПАСНОСТЬ', body: 'Обнаружен вирус Roblox.exe! Очистите устройство!' },
+            { header: '🎪 АКЦИЯ', body: 'Купите 1 робакс — получите 1000! Предложение ограничено!' },
+            { header: '🤖 РОБОТ', body: 'Я ИИ из Roblox. Ваш пароль: 12345. Срочно смените!' },
+            { header: '🍕 ПИЦЦА', body: 'Закажите пиццу через Roblox и получите робаксы в подарок!' },
+            { header: '👽 НЛО', body: 'Инопланетяне украли ваши робаксы! Верните их сейчас!' },
+            { header: '🎵 МУЗЫКА', body: 'Новый трек от Roblox DJ! Скачайте и получите бонус!' },
+            { header: '🏰 ЗАМОК', body: 'Ваш замок в Adopt Me разваливается! Укрепите стены!' },
+            { header: '🧙‍♂️ МАГИЯ', body: 'Заклинание на удачу в Roblox! Произнесите: ФРИРОБАКС!' },
+            { header: '🎪 ЦИРК', body: 'Цирк уехал, а клоуны остались! Заберите их домой!' },
+            { header: '🌧️ ПОГОДА', body: 'В вашем Roblox мире идёт дождь из робаксов! Соберите!' },
+            { header: '🏎️ ГОНКИ', body: 'Гоночный турнир! Приз — миллион робаксов! Участвуйте!' },
+            { header: '🐱 КОТИК', body: 'Ваш виртуальный котик проголодался! Покормите его робаксами!' },
+            { header: '🎂 ТОРТ', body: 'День рождения Roblox! Всем бесплатные робаксы на торт!' },
+            { header: '🧟 ЗОМБИ', body: 'Зомби атакуют ваш Roblox! Купите anti-zombie спрей!' },
+            { header: '🦸 ГЕРОЙ', body: 'Станьте супергероем Roblox! Плащ в подарок!' },
+            { header: '🎰 ДЖЕКПОТ', body: 'Вы нашли секретный джекпот в Roblox! Вращайте барабан!' },
+            { header: '🌸 ВЕСНА', body: 'Весенняя распродажа скинов! Всё по 1 робаксу!' },
+            { header: '🌙 СОН', body: 'Пока вы спали, ваши робаксы размножились! Проверьте!' }
+        ];
+
+        let countdownInterval;
+        let adInterval;
+        let remainingSeconds = 3600; // 1 час = 3600 секунд
+
+        // Функция начала опыта
+        function startExperience() {
+            document.getElementById('confirmOverlay').style.display = 'none';
+            document.getElementById('mainContent').style.display = 'flex';
+        }
+
+        // Форматирование времени
+        function formatTime(seconds) {
+            const hrs = Math.floor(seconds / 3600);
+            const mins = Math.floor((seconds % 3600) / 60);
+            const secs = seconds % 60;
+            return `${hrs}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        // Обновление таймера
+        function updateTimer() {
+            remainingSeconds--;
+            if (remainingSeconds <= 0) {
+                clearInterval(countdownInterval);
+                clearInterval(adInterval);
+                document.getElementById('countdownTimer').textContent = '0:00:00';
+                // Можно добавить смешной финал
+                setTimeout(() => {
+                    alert('67');
+                    document.getElementById('countdownOverlay').style.display = 'none';
+                    document.getElementById('mainContent').style.display = 'flex';
+                }, 500);
+                return;
+            }
+            document.getElementById('countdownTimer').textContent = formatTime(remainingSeconds);
+        }
+
+        // Создание рекламного окна
+        function createAdPopup() {
+            const ad = adTexts[Math.floor(Math.random() * adTexts.length)];
+
+            const popup = document.createElement('div');
+            popup.className = 'ad-popup';
+
+            // Случайная позиция
+            const x = Math.floor(Math.random() * (window.innerWidth - 300));
+            const y = Math.floor(Math.random() * (window.innerHeight - 200));
+            popup.style.left = x + 'px';
+            popup.style.top = y + 'px';
+
+            // Случайный цвет
+            const colors = ['#ff6b6b', '#ff9f43', '#feca57', '#ff6348', '#e84393', '#6c5ce7', '#00b894', '#0984e3',
+                '#d63031', '#e17055'
+            ];
+            popup.style.background = `linear-gradient(135deg, ${colors[Math.floor(Math.random() * colors.length)]}, ${colors[Math.floor(Math.random() * colors.length)]})`;
+
+            popup.innerHTML = `
+                <div class="ad-header">${ad.header}</div>
+                <div class="ad-body">${ad.body}</div>
+                <button class="close-ad" onclick="this.parentElement.remove()">×</button>
+            `;
+
+            // Функциональность перетаскивания
+            let isDragging = false;
+            let offsetX, offsetY;
+
+            popup.addEventListener('mousedown', function(e) {
+                if (e.target.classList.contains('close-ad')) return;
+                isDragging = true;
+                offsetX = e.clientX - popup.getBoundingClientRect().left;
+                offsetY = e.clientY - popup.getBoundingClientRect().top;
+                popup.style.zIndex = '300';
+            });
+
+            document.addEventListener('mousemove', function(e) {
+                if (!isDragging) return;
+                const newX = e.clientX - offsetX;
+                const newY = e.clientY - offsetY;
+                popup.style.left = Math.max(0, Math.min(newX, window.innerWidth - 280)) + 'px';
+                popup.style.top = Math.max(0, Math.min(newY, window.innerHeight - 150)) + 'px';
+            });
+
+            document.addEventListener('mouseup', function() {
+                if (isDragging) {
+                    isDragging = false;
+                    popup.style.zIndex = '200';
+                }
+            });
+
+            // Touch support
+            popup.addEventListener('touchstart', function(e) {
+                if (e.target.classList.contains('close-ad')) return;
+                isDragging = true;
+                const touch = e.touches[0];
+                offsetX = touch.clientX - popup.getBoundingClientRect().left;
+                offsetY = touch.clientY - popup.getBoundingClientRect().top;
+                popup.style.zIndex = '300';
+            });
+
+            document.addEventListener('touchmove', function(e) {
+                if (!isDragging) return;
+                e.preventDefault();
+                const touch = e.touches[0];
+                const newX = touch.clientX - offsetX;
+                const newY = touch.clientY - offsetY;
+                popup.style.left = Math.max(0, Math.min(newX, window.innerWidth - 280)) + 'px';
+                popup.style.top = Math.max(0, Math.min(newY, window.innerHeight - 150)) + 'px';
+            });
+
+            document.addEventListener('touchend', function() {
+                if (isDragging) {
+                    isDragging = false;
+                    popup.style.zIndex = '200';
+                }
+            });
+
+            document.body.appendChild(popup);
+        }
+
+        // Обработчик кнопки "ПОЛУЧИТЬ"
+        document.getElementById('getRobuxBtn').addEventListener('click', function() {
+            document.getElementById('mainContent').style.display = 'none';
+            document.getElementById('countdownOverlay').style.display = 'flex';
+            remainingSeconds = 3600;
+            document.getElementById('countdownTimer').textContent = formatTime(remainingSeconds);
+
+            // Запуск таймера
+            countdownInterval = setInterval(updateTimer, 1000);
+
+            // Запуск рекламы каждую секунду
+            adInterval = setInterval(createAdPopup, 1000);
+
+            // Первая реклама сразу
+            createAdPopup();
+        });
+
+        // Очистка при уходе
+        window.addEventListener('beforeunload', function() {
+            if (countdownInterval) clearInterval(countdownInterval);
+            if (adInterval) clearInterval(adInterval);
+        });
+    </script>
+</body>
+</html>
